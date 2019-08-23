@@ -1,0 +1,11 @@
+{
+  "name" : "Block facebook",
+  "rules" : [
+    {
+      "action" : "deny",
+      "owner" : "any",
+      "process" : "any",
+      "remote-addresses" : "xxxx"
+    }
+  ]
+}
