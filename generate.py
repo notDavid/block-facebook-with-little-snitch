@@ -16,7 +16,9 @@ def main():
         ips = strip_crap(stdout)
         ips = convert_iprange(ips)
         write_file(ips)
-        print_success("Done!")
+        print_success("Done! File saved to " + BASEDIR_PATH + "/Blockfacebook.lsrules")
+    else:
+        sys.exit(-1)
 
 
 def write_file(ips):
@@ -35,13 +37,17 @@ def convert_iprange(iprange):
     ipls = ""
     ips = iprange.split()
     ips.sort()
-    for ip in ips:
-        subnet = ipcalc.Network(ip)
-        if (ipls != ""):
-            ipls += ", "
-        ipls += str(subnet[0]) + "-" + str(subnet[-1])
 
-    return(ipls)
+    if len(ips) > 0:
+        for ip in ips:
+            subnet = ipcalc.Network(ip)
+            if (ipls != ""):
+                ipls += ", "
+            ipls += str(subnet[0]) + "-" + str(subnet[-1])
+
+        return(ipls)
+    else:
+        raise Exception("No ips found...")
 
 
 def strip_crap(strOut):
@@ -69,17 +75,13 @@ def run_whois():
 def run_shell(cmd):
     returncode = -1
     stdout = ""
-    try:
-        result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
-        returncode = result.returncode
-        stdout = result.stdout.decode('utf-8')
-        if returncode != 0:
-            print_failure("whois command failed")
-        return (returncode, stdout)
 
-    except Exception:
-        print_failure("whois command failed")
-        return (returncode, stdout)
+    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+    returncode = result.returncode
+    stdout = result.stdout.decode('utf-8')
+    if returncode != 0:
+        raise Exception("shell command failed with error " + str(returncode) + " : " + cmd)
+    return (returncode, stdout)
 
 
 class Colors(object):
